@@ -416,10 +416,12 @@ function ConversationCard(props) {
               const position = { x: window.innerWidth / 2 - 300, y: window.innerHeight / 2 - 200 }
               const toolbarContainer = createElementAtPosition(position.x, position.y)
               toolbarContainer.className = 'chatgptbox-toolbar-container-not-queryable'
+              console.log('新增卡片', characterId)
               render(
                 <FloatingToolbar
                   session={session}
                   selection=""
+                  characterId={characterId}
                   container={toolbarContainer}
                   closeable={true}
                   triggered={true}
@@ -459,6 +461,7 @@ function ConversationCard(props) {
                   sessionName: new Date().toLocaleString(),
                   autoClean: false,
                   sessionId: uuidv4(),
+                  // characterId: characterId,
                 }
                 setSession(newSession)
                 createSession(newSession).then(() =>

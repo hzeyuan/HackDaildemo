@@ -23,7 +23,7 @@ function FloatingToolbar(props) {
   const [virtualPosition, setVirtualPosition] = useState({ x: 0, y: 0 })
   const windowSize = useClampWindowSize([750, 1500], [0, Infinity])
   // const [customTask, setCustomTask] = useState(false)
-  const [characterId, setCharacterId] = useState([])
+  const [characterId, setCharacterId] = useState(props.characterId)
   const config = useConfig(() => {
     setRender(true)
     if (!triggered) {
@@ -216,6 +216,7 @@ FloatingToolbar.propTypes = {
   session: PropTypes.object.isRequired,
   selection: PropTypes.string.isRequired,
   container: PropTypes.object.isRequired,
+  characterId: PropTypes.number.isRequired,
   triggered: PropTypes.bool,
   closeable: PropTypes.bool,
   dockable: PropTypes.bool,
