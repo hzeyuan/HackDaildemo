@@ -1,17 +1,7 @@
-export function getConversationPairs(records, isCompletion) {
-  let pairs
-  if (isCompletion) {
-    pairs = ''
-    for (const record of records) {
-      pairs += 'Human: ' + record.question + '\nAI: ' + record.answer + '\n'
-    }
-  } else {
-    pairs = []
-    for (const record of records) {
-      pairs.push({ role: 'user', content: record['question'] })
-      pairs.push({ role: 'assistant', content: record['answer'] })
-    }
+export function getConversationPairs(records) {
+  const pairs = []
+  for (const record of records) {
+    pairs.push({ question: record.question, answer: record.answer })
   }
-
   return pairs
 }

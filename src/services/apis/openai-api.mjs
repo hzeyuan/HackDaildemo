@@ -4,6 +4,7 @@ import { Models, getUserConfig } from '../../config/index.mjs'
 import { fetchSSE } from '../../utils/fetch-sse.mjs'
 import { getConversationPairs } from '../../utils/get-conversation-pairs.mjs'
 import { isEmpty } from 'lodash-es'
+import Browser from 'webextension-polyfill'
 import {
   getChatSystemPromptBase,
   getCompletionPromptBase,
@@ -87,13 +88,6 @@ export async function generateAnswersWithGptCompletionApi(
   })
 }
 
-/**
- * @param {Browser.Runtime.Port} port
- * @param {string} question
- * @param {Session} session
- * @param {string} apiKey
- * @param {string} modelName
- */
 export async function generateAnswersWithChatgptApi(port, question, session, apiKey, modelName) {
   const { controller, messageListener, disconnectListener } = setAbortController(port)
 
@@ -151,6 +145,82 @@ export async function generateAnswersWithChatgptApi(port, question, session, api
     },
     async onError(resp) {
       port.onMessage.removeListener(messageListener)
+      port.onDisconnect.removeListener(disconnectListener)
+      if (resp instanceof Error) throw resp
+      const error = await resp.json().catch(() => ({}))
+      throw new Error(!isEmpty(error) ? JSON.stringify(error) : `${resp.status} ${resp.statusText}`)
+    },
+  })
+}
+
+/**
+ * @param {Browser.Runtime.Port} port
+ * @param {string} question
+ * @param {Session} session
+ */
+export async function generateAnswersWithUseslessApi(port, question, session) {
+  const { controller, messageListener, disconnectListener } = setAbortController(port)
+
+  const config = await getUserConfig()
+  const history = getConversationPairs(
+    session.conversationRecords.slice(-config.maxConversationContextLength),
+  )
+  // prompt.unshift({ role: 'system', content: await getChatSystemPromptBase() })
+  // prompt.push({ role: 'user', content: question })
+  const token = await Browser.storage.local.get('token').data
+  console.log('token', token, history)
+  let answer = ''
+  await fetchSSE(`http://127.0.0.1:1338/api/prompt`, {
+    method: 'POST',
+    signal: controller.signal,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsImlhdCI6MTY5ODcyNDM0NSwiZXhwIjoxNzMwMjgxOTQ1fQ.PJe4ZKb3-ozU8csOnO_XUWjPLfzdm5Ek5tpkm6ZLMbI'}`,
+    },
+    body: JSON.stringify({
+      prompt: question,
+      characterId: 1310,
+      history,
+      uid: 2,
+    }),
+    onMessage(message) {
+      // console.debug('sse message', message)
+
+      let data
+      try {
+        data = JSON.parse(message)
+      } catch (error) {
+        console.debug('json error', error)
+        return
+      }
+
+      // if (data?.error) {
+      //   console.log('error', data.error)
+      //   port.onMessage.removeListener(messageListener)
+      //   port.onDisconnect.removeListener(disconnectListener)
+      //   throw new Error(data.error)
+      // }
+
+      if (data?.done) {
+        pushRecord(session, question, answer)
+        console.debug('conversation history', { content: session.conversationRecords })
+        port.postMessage({ answer: null, done: true, session: session })
+        return
+      }
+
+      answer += data.content?.token || ''
+      // console.log('answer', answer)
+      port.postMessage({ answer: answer, done: false, session: null })
+    },
+    async onStart() {},
+    async onEnd() {
+      port.postMessage({ done: true })
+      port.onMessage.removeListener(messageListener)
+      port.onDisconnect.removeListener(disconnectListener)
+    },
+    async onError(resp) {
+      port.onMessage.removeListener(messageListener)
+      console.log('error', resp)
       port.onDisconnect.removeListener(disconnectListener)
       if (resp instanceof Error) throw resp
       const error = await resp.json().catch(() => ({}))

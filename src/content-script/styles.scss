@@ -349,25 +349,39 @@
 }
 
 .chatgptbox-selection-toolbar {
-  display: flex;
+  all: revert;
+  display: flex !important;
+  height: 32px;
   align-items: center;
-  border-radius: 15px;
-  padding: 2px;
-  background-color: #ffffff;
-  box-shadow: 4px 2px 4px rgba(0, 0, 0, 0.2);
+  filter: drop-shadow(rgba(0, 0, 0, 0.16) 0px 2px 16px) !important;
+  border-top-right-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+  border-top-left-radius: 4px !important;
+  border-bottom-left-radius: 4px !important;
+  width: min-content !important;
+  user-select: none !important;
+  background: rgb(255, 255, 255) !important;
+  gap: 4px;
+  padding: 0 4px;
 }
 
 .chatgptbox-selection-toolbar-button {
-  margin: 0 2px 0 0;
-  padding: 2px;
-  border-radius: 30px;
-  background-color: #ffffff;
-  color: #24292f;
-  cursor: pointer;
+  display: flex !important;
+  -webkit-box-pack: center !important;
+  justify-content: center !important;
+  -webkit-box-align: center !important;
+  align-items: center !important;
+  padding: 4px !important;
+  cursor: pointer !important;
+  border-radius: 4px !important;
+  transition: background-color 0.2s ease 0s !important;
+  height: 28px;
+  width: 28px;
 }
 
 .chatgptbox-selection-toolbar-button:hover {
-  background-color: #d4d5da;
+  background-color: rgb(237, 242, 247) !important;
+  border-radius: 8px !important;
 }
 
 .chatgptbox-selection-window {
@@ -375,4 +389,22 @@
   border-radius: 8px;
   background-color: var(--theme-color);
   box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
+}
+
+.selectionLine {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  background: linear-gradient(
+    30deg,
+    rgb(135, 206, 250) 7.68%,
+    /* SkyBlue1 */ rgb(100, 149, 237) 50.09%,
+    /* CornflowerBlue */ rgb(70, 130, 180) 92.5% /* SteelBlue */
+  );
+  width: 4px !important;
+  height: 32px !important;
+}
+
+[class^='ant-select'],
+[class*=' ant-select'] {
+  z-index: 999999 !important; /* 使用 !important 以确保覆盖其他设置 */
 }

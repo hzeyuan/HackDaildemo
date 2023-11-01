@@ -8,3 +8,5 @@ export * from './FeedbackForChatGPTWeb'
 export * from './FloatingToolbar'
 export * from './InputBox'
 export * from './ReadButton'
+
+export * from './LanguageDropdown'

@@ -82,7 +82,8 @@ function DecisionCard(props) {
                 return (
                   <p className="gpt-inner manual-btn" onClick={() => setTriggered(true)}>
                     <span className="icon-and-text">
-                      <SearchIcon size="small" /> {t('Ask ChatGPT')}
+                      <SearchIcon size="small" />
+                      {t('Ask ChatGPT')}
                     </span>
                   </p>
                 )

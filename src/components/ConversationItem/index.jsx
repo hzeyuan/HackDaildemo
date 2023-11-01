@@ -50,11 +50,12 @@ export function ConversationItem({ type, content, session, onRetry }) {
         <div className={type} dir="auto">
           <div className="gpt-header">
             <p style="white-space: nowrap;">
-              {session && session.aiName
+              {/* {session && session.aiName
                 ? `${t(session.aiName)}${
                     isUsingCustomModel(session) ? ' (' + config.customModelName + ')' : ''
                   }:`
-                : t('Loading...')}
+                : t('Loading...')} */}
+              小莓用AI
             </p>
             <div className="gpt-util-group">
               {onRetry && (

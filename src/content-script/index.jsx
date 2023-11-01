@@ -28,6 +28,7 @@ import { generateAnswersWithChatgptWebApi } from '../services/apis/chatgpt-web.m
 import NotificationForChatGPTWeb from '../components/NotificationForChatGPTWeb'
 
 /**
+ * 用于加载组件，重试10次以便找到需要的DOM元素并在其上渲染组件。
  * @param {SiteConfig} siteConfig
  * @param {UserConfig} userConfig
  */
@@ -117,7 +118,10 @@ const createSelectionTools = async (toolbarContainer, selection) => {
   toolbarContainer.className = 'chatgptbox-toolbar-container'
   render(
     <FloatingToolbar
-      session={initSession({ modelName: (await getUserConfig()).modelName })}
+      session={initSession({
+        modelName: (await getUserConfig()).modelName,
+        // character: (await getUserConfig()).character,
+      })}
       selection={selection}
       container={toolbarContainer}
       dockable={true}
@@ -181,6 +185,7 @@ async function prepareForSelectionTools() {
   })
 }
 
+// 控制当用户选择文本时显示工具栏，以及在不再需要时隐藏工具栏
 async function prepareForSelectionToolsTouch() {
   document.addEventListener('touchend', (e) => {
     if (toolbarContainer && toolbarContainer.contains(e.target)) return

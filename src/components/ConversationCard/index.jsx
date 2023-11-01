@@ -25,6 +25,7 @@ import { initSession } from '../../services/init-session.mjs'
 import { findLastIndex } from 'lodash-es'
 import { generateAnswersWithBingWebApi } from '../../services/apis/bing-web.mjs'
 import { handlePortError } from '../../services/wrappers.mjs'
+import { CharacterSelect } from './CharacterSelect'
 
 const logo = Browser.runtime.getURL('logo.png')
 
@@ -117,6 +118,7 @@ function ConversationCard(props) {
    */
   const updateAnswer = (value, appended, newType, done = false) => {
     setConversationItemData((old) => {
+      console.log('old', old, 'newType', newType)
       const copy = [...old]
       const index = findLastIndex(copy, (v) => v.type === 'answer' || v.type === 'error')
       if (index === -1) return copy
@@ -194,7 +196,9 @@ function ConversationCard(props) {
    * @param {boolean|undefined} stop
    */
   const postMessage = async ({ session, stop }) => {
-    if (useForegroundFetch) {
+    // 使用bing搜索
+    // useForegroundFetch = false
+    if (false) {
       foregroundMessageListeners.current.forEach((listener) => listener({ session, stop }))
       if (session) {
         const fakePort = {
@@ -330,7 +334,14 @@ function ConversationCard(props) {
           ) : (
             <img src={logo} style="user-select:none;width:20px;height:20px;" />
           )}
-          <select
+          {/* */}
+          <CharacterSelect
+            defaultValue={props.character}
+            characters={config.activeSelectionCharacters}
+          ></CharacterSelect>
+
+          {/* <EnergyQuota></EnergyQuota> */}
+          {/* <select
             style={props.notClampSize ? {} : { width: 0, flexGrow: 1 }}
             className="normal-button"
             required
@@ -362,7 +373,7 @@ function ConversationCard(props) {
                   </option>
                 )
             })}
-          </select>
+          </select> */}
         </span>
         {props.draggable && !completeDraggable && (
           <div className="draggable" style={{ flexGrow: 2, cursor: 'move', height: '55px' }} />
@@ -533,7 +544,8 @@ function ConversationCard(props) {
 
 ConversationCard.propTypes = {
   session: PropTypes.object.isRequired,
-  question: PropTypes.string.isRequired,
+  question: PropTypes.string,
+  character: PropTypes.string,
   onUpdate: PropTypes.func,
   draggable: PropTypes.bool,
   closeable: PropTypes.bool,

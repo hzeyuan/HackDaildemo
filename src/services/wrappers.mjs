@@ -100,6 +100,7 @@ export function registerPortListener(executor) {
       const session = msg.session
       if (!session) return
       const config = await getUserConfig()
+      console.log('session.modelName', session.modelName)
       if (!session.modelName) session.modelName = config.modelName
       if (!session.aiName) session.aiName = Models[session.modelName].desc
       port.postMessage({ session })

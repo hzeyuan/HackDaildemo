@@ -8,7 +8,8 @@ import Draggable from 'react-draggable'
 import { useClampWindowSize } from '../../hooks/use-clamp-window-size'
 import { useTranslation } from 'react-i18next'
 import { useConfig } from '../../hooks/use-config.mjs'
-
+import LanguageDropdown from '../LanguageDropdown'
+import { Avatar, Space } from 'antd'
 const logo = Browser.runtime.getURL('logo.png')
 
 function FloatingToolbar(props) {
@@ -21,6 +22,8 @@ function FloatingToolbar(props) {
   const [position, setPosition] = useState(getClientPosition(props.container))
   const [virtualPosition, setVirtualPosition] = useState({ x: 0, y: 0 })
   const windowSize = useClampWindowSize([750, 1500], [0, Infinity])
+  const [customTask, setCustomTask] = useState(false)
+  const [character, setCharacter] = useState([])
   const config = useConfig(() => {
     setRender(true)
     if (!triggered) {
@@ -48,7 +51,18 @@ function FloatingToolbar(props) {
     }
   }, [])
 
+  const handleSelectLanguage = async (key) => {
+    const toolConfig = toolsConfig[key]
+    const p = getClientPosition(props.container)
+    props.container.style.position = 'fixed'
+    setPosition(p)
+    setPrompt(await toolConfig.genPrompt(selection))
+    setTriggered(true)
+  }
+
   if (!render) return <div />
+
+  console.log('triggered', triggered)
 
   if (triggered) {
     const updatePosition = () => {
@@ -92,6 +106,7 @@ function FloatingToolbar(props) {
             <div className="chatgptbox-container">
               <ConversationCard
                 session={props.session}
+                character={character}
                 question={prompt}
                 draggable={true}
                 closeable={closeable}
@@ -113,35 +128,83 @@ function FloatingToolbar(props) {
     if (config.activeSelectionTools.length === 0) return <div />
 
     const tools = []
-
     for (const key in toolsConfig) {
       if (config.activeSelectionTools.includes(key)) {
         const toolConfig = toolsConfig[key]
         tools.push(
-          cloneElement(toolConfig.icon, {
-            size: 20,
-            className: 'chatgptbox-selection-toolbar-button',
-            title: t(toolConfig.label),
-            onClick: async () => {
-              const p = getClientPosition(props.container)
-              props.container.style.position = 'fixed'
-              setPosition(p)
-              setPrompt(await toolConfig.genPrompt(selection))
-              setTriggered(true)
-            },
-          }),
+          <div className="chatgptbox-selection-toolbar-button">
+            {cloneElement(toolConfig.icon, {
+              title: t(toolConfig.label),
+              size: 20,
+              onClick: async () => {
+                const p = getClientPosition(props.container)
+                props.container.style.position = 'fixed'
+                setPosition(p)
+                setPrompt(await toolConfig.genPrompt(selection))
+                setTriggered(true)
+              },
+            })}
+          </div>,
+          // cloneElement(toolConfig.icon, {
+          //   size: 20,
+          //   className: 'chatgptbox-selection-toolbar-button',
+          //   title: t(toolConfig.label),
+          //   onClick: async () => {
+          //     const p = getClientPosition(props.container)
+          //     props.container.style.position = 'fixed'
+          //     setPosition(p)
+          //     setPrompt(await toolConfig.genPrompt(selection))
+          //     setTriggered(true)
+          //   },
+          // }),
         )
       }
     }
 
     return (
       <div data-theme={config.themeMode}>
-        <div className="chatgptbox-selection-toolbar">
+        <div size="small" block vertical className="chatgptbox-selection-toolbar">
+          <div className="selectionLine"></div>
+          {/* <div style={{padding:'0 4px'}}> 
           <img
             src={logo}
             style="user-select:none;width:24px;height:24px;background:rgba(0,0,0,0);filter:none;"
           />
+          </div> */}
           {tools}
+          {config.activeSelectionCharacters.map((item, index) => (
+            <div
+              onClick={async () => {
+                const p = getClientPosition(props.container)
+                props.container.style.position = 'fixed'
+                setPosition(p)
+                setPrompt(selection)
+                // setCharacter(item.id)
+                // setPrompt(await toolConfig.genPrompt(selection))
+                console.log('点击角色进行对话', selection, item)
+                setTriggered(true)
+              }}
+              key={item?.id}
+              className="chatgptbox-selection-toolbar-button"
+            >
+              <Avatar
+                size={24}
+                src={
+                  <img
+                    style={{ width: '24px', height: '24px' }}
+                    src={item?.attributes?.avatar}
+                    alt="avatar"
+                  />
+                }
+              />
+            </div>
+          ))}
+
+          {/* <LanguageDropdown
+            selectLanguage={() => {
+              handleSelectLanguage('translate')
+            }}
+          /> */}
         </div>
       </div>
     )

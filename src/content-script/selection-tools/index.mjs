@@ -1,19 +1,16 @@
+import { CardList, EmojiSmile, Translate } from 'react-bootstrap-icons'
 import {
-  CardHeading,
-  CardList,
-  EmojiSmile,
-  Palette,
-  QuestionCircle,
-  Translate,
-  Braces,
-  Globe,
-  ChatText,
-} from 'react-bootstrap-icons'
+  QuestionCircleOutlined,
+  FileDoneOutlined,
+  ExceptionOutlined,
+  CommentOutlined,
+  CodeOutlined,
+} from '@ant-design/icons'
 import { getPreferredLanguage } from '../../config/language.mjs'
 
 export const config = {
   explain: {
-    icon: <ChatText />,
+    icon: <QuestionCircleOutlined style={{ width: '20px', height: '20px' }} />,
     label: 'Explain',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()
@@ -28,34 +25,34 @@ export const config = {
       return `Translate the following into ${preferredLanguage} and only show me the translated content:\n${selection}`
     },
   },
-  translateToEn: {
-    icon: <Globe />,
-    label: 'Translate (To English)',
-    genPrompt: async (selection) => {
-      return `Translate the following into English and only show me the translated content:\n${selection}`
-    },
-  },
-  translateToZh: {
-    icon: <Globe />,
-    label: 'Translate (To Chinese)',
-    genPrompt: async (selection) => {
-      return `Translate the following into Chinese and only show me the translated content:\n${selection}`
-    },
-  },
-  translateBidi: {
-    icon: <Globe />,
-    label: 'Translate (Bidirectional)',
-    genPrompt: async (selection) => {
-      const preferredLanguage = await getPreferredLanguage()
-      return (
-        `Translate the following into ${preferredLanguage} and only show me the translated content.` +
-        `If it is already in ${preferredLanguage},` +
-        `translate it into English and only show me the translated content:\n${selection}`
-      )
-    },
-  },
+  // translateToEn: {
+  //   icon: <TranslationOutlined />,
+  //   label: 'Translate (To English)',
+  //   genPrompt: async (selection) => {
+  //     return `Translate the following into English and only show me the translated content:\n${selection}`
+  //   },
+  // },
+  // translateToZh: {
+  //   icon: <Globe />,
+  //   label: 'Translate (To Chinese)',
+  //   genPrompt: async (selection) => {
+  //     return `Translate the following into Chinese and only show me the translated content:\n${selection}`
+  //   },
+  // },
+  // translateBidi: {
+  //   icon: <Globe />,
+  //   label: 'Translate (Bidirectional)',
+  //   genPrompt: async (selection) => {
+  //     const preferredLanguage = await getPreferredLanguage()
+  //     return (
+  //       `Translate the following into ${preferredLanguage} and only show me the translated content.` +
+  //       `If it is already in ${preferredLanguage},` +
+  //       `translate it into English and only show me the translated content:\n${selection}`
+  //     )
+  //   },
+  // },
   summary: {
-    icon: <CardHeading />,
+    icon: <ExceptionOutlined style={{ width: '20px', height: '20px', fontSize: '20px' }} />,
     label: 'Summary',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()
@@ -63,7 +60,7 @@ export const config = {
     },
   },
   polish: {
-    icon: <Palette />,
+    icon: <FileDoneOutlined style={{ width: '20px', height: '20px', fontSize: '20px' }} />,
     label: 'Polish',
     genPrompt: async (selection) =>
       `Check the following content for possible diction and grammar problems,and polish it carefully:\n"${selection}"`,
@@ -83,7 +80,7 @@ export const config = {
       `Divide the following into paragraphs that are easy to read and understand:\n"${selection}"`,
   },
   code: {
-    icon: <Braces />,
+    icon: <CodeOutlined style={{ width: '20px', height: '20px', fontSize: '20px' }} />,
     label: 'Code Explain',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()
@@ -91,7 +88,7 @@ export const config = {
     },
   },
   ask: {
-    icon: <QuestionCircle />,
+    icon: <CommentOutlined style={{ width: '20px', height: '20px', fontSize: '20px' }} />,
     label: 'Ask',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()

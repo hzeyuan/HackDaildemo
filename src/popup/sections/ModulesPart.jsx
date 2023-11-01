@@ -11,11 +11,12 @@ ModulesPart.propTypes = {
 }
 
 export function ModulesPart({ config, updateConfig }) {
-  const { t } = useTranslation()
+  // const { t } = useTranslation()
 
   return (
     <>
-      <Tabs selectedTabClassName="popup-tab--selected">
+      <SelectionTools config={config} updateConfig={updateConfig} />
+      {/* <Tabs selectedTabClassName="popup-tab--selected">
         <TabList>
           <Tab className="popup-tab">{t('API Modes')}</Tab>
           <Tab className="popup-tab">{t('Selection Tools')}</Tab>
@@ -31,7 +32,7 @@ export function ModulesPart({ config, updateConfig }) {
         <TabPanel>
           <SiteAdapters config={config} updateConfig={updateConfig} />
         </TabPanel>
-      </Tabs>
+      </Tabs> */}
     </>
   )
 }

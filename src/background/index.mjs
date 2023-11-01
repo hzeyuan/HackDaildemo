@@ -8,6 +8,7 @@ import { generateAnswersWithBingWebApi } from '../services/apis/bing-web.mjs'
 import {
   generateAnswersWithChatgptApi,
   generateAnswersWithGptCompletionApi,
+  generateAnswersWithUseslessApi,
 } from '../services/apis/openai-api'
 import { generateAnswersWithCustomApi } from '../services/apis/custom-api.mjs'
 import { generateAnswersWithAzureOpenaiApi } from '../services/apis/azure-openai-api.mjs'
@@ -67,75 +68,84 @@ function setPortProxy(port, proxyTabId) {
 }
 
 async function executeApi(session, port, config) {
-  console.debug('modelName', session.modelName)
-  if (chatgptWebModelKeys.includes(session.modelName)) {
-    let tabId
-    if (
-      config.chatgptTabId &&
-      config.customChatGptWebApiUrl === defaultConfig.customChatGptWebApiUrl
-    ) {
-      const tab = await Browser.tabs.get(config.chatgptTabId).catch(() => {})
-      if (tab) tabId = tab.id
-    }
-    if (tabId) {
-      if (!port.proxy) {
-        setPortProxy(port, tabId)
-        port.proxy.postMessage({ session })
-      }
-    } else {
-      const accessToken = await getChatGptAccessToken()
-      await generateAnswersWithChatgptWebApi(port, session.question, session, accessToken)
-    }
-  } else if (
-    // `.some` for multi mode models. e.g. bingFree4-balanced
-    bingWebModelKeys.some((n) => session.modelName.includes(n))
-  ) {
-    const accessToken = await getBingAccessToken()
-    if (session.modelName.includes('bingFreeSydney'))
-      await generateAnswersWithBingWebApi(port, session.question, session, accessToken, true)
-    else await generateAnswersWithBingWebApi(port, session.question, session, accessToken)
-  } else if (gptApiModelKeys.includes(session.modelName)) {
-    await generateAnswersWithGptCompletionApi(
-      port,
-      session.question,
-      session,
-      config.apiKey,
-      session.modelName,
-    )
-  } else if (chatgptApiModelKeys.includes(session.modelName)) {
-    await generateAnswersWithChatgptApi(
-      port,
-      session.question,
-      session,
-      config.apiKey,
-      session.modelName,
-    )
-  } else if (customApiModelKeys.includes(session.modelName)) {
-    await generateAnswersWithCustomApi(port, session.question, session, '', config.customModelName)
-  } else if (azureOpenAiApiModelKeys.includes(session.modelName)) {
-    await generateAnswersWithAzureOpenaiApi(port, session.question, session)
-  } else if (claudeApiModelKeys.includes(session.modelName)) {
-    await generateAnswersWithClaudeApi(port, session.question, session)
-  } else if (githubThirdPartyApiModelKeys.includes(session.modelName)) {
-    await generateAnswersWithWaylaidwandererApi(port, session.question, session)
-  } else if (poeWebModelKeys.includes(session.modelName)) {
-    throw new Error('Due to the new verification, Poe Web API is currently not supported.')
-    // if (session.modelName === 'poeAiWebCustom')
-    //   await generateAnswersWithPoeWebApi(port, session.question, session, config.poeCustomBotName)
-    // else
-    //   await generateAnswersWithPoeWebApi(
-    //     port,
-    //     session.question,
-    //     session,
-    //     Models[session.modelName].value,
-    //   )
-  } else if (bardWebModelKeys.includes(session.modelName)) {
-    const cookies = await getBardCookies()
-    await generateAnswersWithBardWebApi(port, session.question, session, cookies)
-  } else if (claudeWebModelKeys.includes(session.modelName)) {
-    const sessionKey = await getClaudeSessionKey()
-    await generateAnswersWithClaudeWebApi(port, session.question, session, sessionKey)
-  }
+  console.info('modelName', session, port, config)
+
+  await generateAnswersWithUseslessApi(
+    port,
+    session.question,
+    session,
+    config.apiKey,
+    session.modelName,
+  )
+
+  // web上能否使用
+  // if (chatgptWebModelKeys.includes(session.modelName)) {
+  //   let tabId
+  //   if (
+  //     config.chatgptTabId &&
+  //     config.customChatGptWebApiUrl === defaultConfig.customChatGptWebApiUrl
+  //   ) {
+  //     const tab = await Browser.tabs.get(config.chatgptTabId).catch(() => { })
+  //     if (tab) tabId = tab.id
+  //   }
+  //   if (tabId) {
+  //     if (!port.proxy) {
+  //       setPortProxy(port, tabId)
+  //       port.proxy.postMessage({ session })
+  //     }
+  //   } else {
+  //     const accessToken = await getChatGptAccessToken()
+  //     await generateAnswersWithChatgptWebApi(port, session.question, session, accessToken)
+  //   }
+  //   // `.some` for multi mode models. e.g. bingFree4-balanced
+  // } else if (bingWebModelKeys.some((n) => session.modelName.includes(n))
+  // ) {
+  //   const accessToken = await getBingAccessToken()
+  //   if (session.modelName.includes('bingFreeSydney'))
+  //     await generateAnswersWithBingWebApi(port, session.question, session, accessToken, true)
+  //   else await generateAnswersWithBingWebApi(port, session.question, session, accessToken)
+  // } else if (gptApiModelKeys.includes(session.modelName)) {
+  //   await generateAnswersWithGptCompletionApi(
+  //     port,
+  //     session.question,
+  //     session,
+  //     config.apiKey,
+  //     session.modelName,
+  //   )
+  // } else if (chatgptApiModelKeys.includes(session.modelName)) {
+  //   await generateAnswersWithUseslessApi(
+  //     port,
+  //     session.question,
+  //     session,
+  //     config.apiKey,
+  //     session.modelName,
+  //   )
+  // } else if (customApiModelKeys.includes(session.modelName)) {
+  //   await generateAnswersWithCustomApi(port, session.question, session, '', config.customModelName)
+  // } else if (azureOpenAiApiModelKeys.includes(session.modelName)) {
+  //   await generateAnswersWithAzureOpenaiApi(port, session.question, session)
+  // } else if (claudeApiModelKeys.includes(session.modelName)) {
+  //   await generateAnswersWithClaudeApi(port, session.question, session)
+  // } else if (githubThirdPartyApiModelKeys.includes(session.modelName)) {
+  //   await generateAnswersWithWaylaidwandererApi(port, session.question, session)
+  // } else if (poeWebModelKeys.includes(session.modelName)) {
+  //   throw new Error('Due to the new verification, Poe Web API is currently not supported.')
+  //   // if (session.modelName === 'poeAiWebCustom')
+  //   //   await generateAnswersWithPoeWebApi(port, session.question, session, config.poeCustomBotName)
+  //   // else
+  //   //   await generateAnswersWithPoeWebApi(
+  //   //     port,
+  //   //     session.question,
+  //   //     session,
+  //   //     Models[session.modelName].value,
+  //   //   )
+  // } else if (bardWebModelKeys.includes(session.modelName)) {
+  //   const cookies = await getBardCookies()
+  //   await generateAnswersWithBardWebApi(port, session.question, session, cookies)
+  // } else if (claudeWebModelKeys.includes(session.modelName)) {
+  //   const sessionKey = await getClaudeSessionKey()
+  //   await generateAnswersWithClaudeWebApi(port, session.question, session, sessionKey)
+  // }
 }
 
 Browser.runtime.onMessage.addListener(async (message, sender) => {

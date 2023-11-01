@@ -1,7 +1,7 @@
 {
-  "name": "ChatGPTBox",
-  "description": "Integrating ChatGPT into your browser deeply, everything you need is here",
-  "version": "2.4.4",
+  "name": "小莓用AI",
+  "description": "description",
+  "version": "0.0.1",
   "manifest_version": 3,
   "icons": {
     "16": "logo.png",
@@ -24,7 +24,9 @@
     "unlimitedStorage",
     "tabs",
     "webRequest",
-    "declarativeNetRequestWithHostAccess"
+    "declarativeNetRequestWithHostAccess",
+    "http://127.0.0.1:1002",
+    "http://127.0.0.1:1338"
   ],
   "optional_permissions": [
     "background"

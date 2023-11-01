@@ -7,7 +7,6 @@ import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
-
 const outdir = 'build'
 
 const __dirname = path.resolve()
@@ -143,6 +142,7 @@ async function runWebpack(isWithoutKatex, isWithoutTiktoken, callback) {
             {
               loader: 'sass-loader',
             },
+            'postcss-loader',
           ],
         },
         {

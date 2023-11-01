@@ -131,7 +131,15 @@ export const defaultConfig = {
   /** @type {keyof ThemeMode}*/
   themeMode: 'auto',
   /** @type {keyof Models}*/
-  modelName: 'chatgptFree35',
+  modelName: 'chatgptApi35',
+
+  character: {
+    id: 1739,
+    attributes: {
+      title: '小莓用AI',
+      avatar: '',
+    },
+  },
 
   preferredLanguage: getNavigatorLanguage(),
   clickIconAction: 'popup',
@@ -140,10 +148,10 @@ export const defaultConfig = {
   answerScrollMargin: 200,
   autoRegenAfterSwitchModel: false,
   selectionToolsNextToInputBox: false,
-  alwaysPinWindow: false,
+  alwaysPinWindow: true,
   focusAfterAnswer: true,
 
-  apiKey: '', // openai ApiKey
+  apiKey: 'sk-UqsXc0DGstzBbldPD8868a62B6174847Be9d84E028F39bCa', // openai ApiKey
 
   azureApiKey: '',
   azureEndpoint: '',
@@ -165,8 +173,8 @@ export const defaultConfig = {
   maxConversationContextLength: 9,
   temperature: 1,
   customChatGptWebApiUrl: 'https://chat.openai.com',
-  customChatGptWebApiPath: '/backend-api/conversation',
-  customOpenAiApiUrl: 'https://api.openai.com',
+  customChatGptWebApiPath: '/v1/chat/completions',
+  customOpenAiApiUrl: 'https://api.usesless.net',
   disableWebModeHistory: true,
   siteRegex: 'match nothing',
   useSiteRegexOnly: false,
@@ -199,6 +207,7 @@ export const defaultConfig = {
     // 'poeAiWebCustom',
   ],
   activeSelectionTools: ['translate', 'summary', 'polish', 'code', 'ask'],
+  activeSelectionCharacters: [],
   activeSiteAdapters: [
     'bilibili',
     'github',
@@ -213,6 +222,7 @@ export const defaultConfig = {
     'followin',
   ],
   accessToken: '',
+  token: '', // 网站登录凭证
   tokenSavedOn: 0,
   bingAccessToken: '',
   chatgptJumpBackTabId: 0,
@@ -228,9 +238,9 @@ export const defaultConfig = {
   selectionTools: [
     'explain',
     'translate',
-    'translateToEn',
-    'translateToZh',
-    'translateBidi',
+    // 'translateToEn',
+    // 'translateToZh',
+    // 'translateBidi',
     'summary',
     'polish',
     'sentiment',
@@ -241,8 +251,8 @@ export const defaultConfig = {
   selectionToolsDesc: [
     'Explain',
     'Translate',
-    'Translate (To English)',
-    'Translate (Bidirectional)',
+    // 'Translate (To English)',
+    // 'Translate (Bidirectional)',
     'Summary',
     'Polish',
     'Sentiment Analysis',
@@ -314,7 +324,14 @@ export async function getPreferredLanguageKey() {
  */
 export async function getUserConfig() {
   const options = await Browser.storage.local.get(Object.keys(defaultConfig))
-  return defaults(options, defaultConfig)
+  // const token = await Browser.storage.local.get('token')
+  return defaults(
+    {
+      ...options,
+      // token,
+    },
+    defaultConfig,
+  )
 }
 
 /**

@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
  * @property {string|null} question
  * @property {Object[]|null} conversationRecords
  * @property {string|null} sessionName
+ * @property {number|null} characterId
  * @property {string|null} sessionId
  * @property {string|null} createdAt
  * @property {string|null} updatedAt
@@ -26,11 +27,13 @@ import { v4 as uuidv4 } from 'uuid'
  * @property {number|null} poe_chatId
  * @property {object|null} bard_conversationObj
  * @property {object|null} claude_conversation
+ *
  */
 /**
  * @param {string|null} question
  * @param {Object[]|null} conversationRecords
  * @param {string|null} sessionName
+ * @param {number|null} characterId
  * @param {string|null} modelName
  * @param {boolean|null} autoClean
  * @returns {Session}
@@ -41,12 +44,13 @@ export function initSession({
   sessionName = null,
   modelName = null,
   autoClean = false,
+  // characterId = 1739
 } = {}) {
   return {
     // common
     question,
     conversationRecords,
-
+    // characterId,
     sessionName,
     sessionId: uuidv4(),
     createdAt: new Date().toISOString(),
