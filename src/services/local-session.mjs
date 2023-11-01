@@ -8,6 +8,7 @@ export const initDefaultSession = async () => {
   return initSession({
     sessionName: new Date().toLocaleString(),
     modelName: modelName,
+    characterId: config.character?.id,
     autoClean: false,
   })
 }

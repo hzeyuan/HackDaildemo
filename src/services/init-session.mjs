@@ -44,13 +44,13 @@ export function initSession({
   sessionName = null,
   modelName = null,
   autoClean = false,
-  // characterId = 1739
+  characterId = 1739
 } = {}) {
   return {
     // common
     question,
     conversationRecords,
-    // characterId,
+    characterId,
     sessionName,
     sessionId: uuidv4(),
     createdAt: new Date().toISOString(),

@@ -72,7 +72,7 @@ export async function generateAnswersWithGptCompletionApi(
       answer += data.choices[0].text
       port.postMessage({ answer: answer, done: false, session: null })
     },
-    async onStart() {},
+    async onStart() { },
     async onEnd() {
       port.postMessage({ done: true })
       port.onMessage.removeListener(messageListener)
@@ -137,7 +137,7 @@ export async function generateAnswersWithChatgptApi(port, question, session, api
         ''
       port.postMessage({ answer: answer, done: false, session: null })
     },
-    async onStart() {},
+    async onStart() { },
     async onEnd() {
       port.postMessage({ done: true })
       port.onMessage.removeListener(messageListener)
@@ -169,6 +169,8 @@ export async function generateAnswersWithUseslessApi(port, question, session) {
   // prompt.push({ role: 'user', content: question })
   const token = await Browser.storage.local.get('token').data
   console.log('token', token, history)
+
+
   let answer = ''
   await fetchSSE(`http://127.0.0.1:1338/api/prompt`, {
     method: 'POST',
@@ -179,13 +181,11 @@ export async function generateAnswersWithUseslessApi(port, question, session) {
     },
     body: JSON.stringify({
       prompt: question,
-      characterId: 1310,
+      characterId: session.characterId,
       history,
-      uid: 2,
     }),
     onMessage(message) {
       // console.debug('sse message', message)
-
       let data
       try {
         data = JSON.parse(message)
@@ -194,12 +194,12 @@ export async function generateAnswersWithUseslessApi(port, question, session) {
         return
       }
 
-      // if (data?.error) {
-      //   console.log('error', data.error)
-      //   port.onMessage.removeListener(messageListener)
-      //   port.onDisconnect.removeListener(disconnectListener)
-      //   throw new Error(data.error)
-      // }
+      if (data?.error) {
+        console.log('error', data.error)
+        port.onMessage.removeListener(messageListener)
+        port.onDisconnect.removeListener(disconnectListener)
+        throw new Error(data.error)
+      }
 
       if (data?.done) {
         pushRecord(session, question, answer)
@@ -212,7 +212,7 @@ export async function generateAnswersWithUseslessApi(port, question, session) {
       // console.log('answer', answer)
       port.postMessage({ answer: answer, done: false, session: null })
     },
-    async onStart() {},
+    async onStart() { },
     async onEnd() {
       port.postMessage({ done: true })
       port.onMessage.removeListener(messageListener)

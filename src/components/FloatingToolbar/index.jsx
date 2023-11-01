@@ -22,8 +22,8 @@ function FloatingToolbar(props) {
   const [position, setPosition] = useState(getClientPosition(props.container))
   const [virtualPosition, setVirtualPosition] = useState({ x: 0, y: 0 })
   const windowSize = useClampWindowSize([750, 1500], [0, Infinity])
-  const [customTask, setCustomTask] = useState(false)
-  const [character, setCharacter] = useState([])
+  // const [customTask, setCustomTask] = useState(false)
+  const [characterId, setCharacterId] = useState([])
   const config = useConfig(() => {
     setRender(true)
     if (!triggered) {
@@ -106,7 +106,7 @@ function FloatingToolbar(props) {
             <div className="chatgptbox-container">
               <ConversationCard
                 session={props.session}
-                character={character}
+                characterId={characterId}
                 question={prompt}
                 draggable={true}
                 closeable={closeable}
@@ -163,7 +163,7 @@ function FloatingToolbar(props) {
 
     return (
       <div data-theme={config.themeMode}>
-        <div size="small" block vertical className="chatgptbox-selection-toolbar">
+        <div size="small" className="chatgptbox-selection-toolbar">
           <div className="selectionLine"></div>
           {/* <div style={{padding:'0 4px'}}> 
           <img
@@ -172,14 +172,14 @@ function FloatingToolbar(props) {
           />
           </div> */}
           {tools}
-          {config.activeSelectionCharacters.map((item, index) => (
+          {config.activeSelectionCharacters.map((item) => (
             <div
               onClick={async () => {
                 const p = getClientPosition(props.container)
                 props.container.style.position = 'fixed'
                 setPosition(p)
                 setPrompt(selection)
-                // setCharacter(item.id)
+                setCharacterId(item.id)
                 // setPrompt(await toolConfig.genPrompt(selection))
                 console.log('点击角色进行对话', selection, item)
                 setTriggered(true)
@@ -188,6 +188,7 @@ function FloatingToolbar(props) {
               className="chatgptbox-selection-toolbar-button"
             >
               <Avatar
+                shape="square"
                 size={24}
                 src={
                   <img

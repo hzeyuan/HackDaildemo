@@ -34,12 +34,14 @@ class ConversationItemData extends Object {
    * @param {'question'|'answer'|'error'} type
    * @param {string} content
    * @param {bool} done
+   * @param {number} characterId
    */
-  constructor(type, content, done = false) {
+  constructor(type, content, done = false, characterId) {
     super()
     this.type = type
     this.content = content
     this.done = done
+    this.characterId = characterId
   }
 }
 
@@ -51,9 +53,10 @@ function ConversationCard(props) {
   const windowSize = useClampWindowSize([750, 1500], [250, 1100])
   const bodyRef = useRef(null)
   const [completeDraggable, setCompleteDraggable] = useState(false)
+  const [characterId, setCharacterId] = useState(props.characterId)
+  console.log('characterId', characterId)
   // `.some` for multi mode models. e.g. bingFree4-balanced
-  const useForegroundFetch = bingWebModelKeys.some((n) => session.modelName.includes(n))
-
+  const useForegroundFetch = false && bingWebModelKeys.some((n) => session.modelName.includes(n))
   /**
    * @type {[ConversationItemData[], (conversationItemData: ConversationItemData[]) => void]}
    */
@@ -102,6 +105,7 @@ function ConversationCard(props) {
   }, [conversationItemData])
 
   useEffect(async () => {
+    // const characterId = session.characterId || props.characterId
     // when the page is responsive, session may accumulate redundant data and needs to be cleared after remounting and before making a new request
     if (props.question) {
       const newSession = initSession({ ...session, question: props.question })
@@ -118,14 +122,16 @@ function ConversationCard(props) {
    */
   const updateAnswer = (value, appended, newType, done = false) => {
     setConversationItemData((old) => {
-      console.log('old', old, 'newType', newType)
+      // console.log('old', old, 'newType', newType)
       const copy = [...old]
       const index = findLastIndex(copy, (v) => v.type === 'answer' || v.type === 'error')
       if (index === -1) return copy
+      // console.log('updateAnswer', characterId)
       copy[index] = new ConversationItemData(
         newType,
         appended ? copy[index].content + value : value,
       )
+      copy[index].characterId = characterId
       copy[index].done = done
       return copy
     })
@@ -198,7 +204,7 @@ function ConversationCard(props) {
   const postMessage = async ({ session, stop }) => {
     // 使用bing搜索
     // useForegroundFetch = false
-    if (false) {
+    if (useForegroundFetch) {
       foregroundMessageListeners.current.forEach((listener) => listener({ session, stop }))
       if (session) {
         const fakePort = {
@@ -336,7 +342,11 @@ function ConversationCard(props) {
           )}
           {/* */}
           <CharacterSelect
-            defaultValue={props.character}
+            onChange={(id) => {
+              setCharacterId(id)
+              setSession({ ...session, characterId: id })
+            }}
+            defaultValue={characterId}
             characters={config.activeSelectionCharacters}
           ></CharacterSelect>
 
@@ -510,6 +520,7 @@ function ConversationCard(props) {
           <ConversationItem
             content={data.content}
             key={idx}
+            characterId={data.characterId}
             type={data.type}
             session={session}
             onRetry={idx === conversationItemData.length - 1 ? getRetryFn(session) : null}
@@ -526,7 +537,7 @@ function ConversationCard(props) {
             'answer',
             `<p class="gpt-loading">${t('Waiting for response...')}</p>`,
           )
-          setConversationItemData([...conversationItemData, newQuestion, newAnswer])
+          setConversationItemData([...conversationItemData, characterId, newQuestion, newAnswer])
           setIsReady(false)
 
           const newSession = { ...session, question, isRetry: false }
@@ -545,7 +556,7 @@ function ConversationCard(props) {
 ConversationCard.propTypes = {
   session: PropTypes.object.isRequired,
   question: PropTypes.string,
-  character: PropTypes.string,
+  characterId: PropTypes.string,
   onUpdate: PropTypes.func,
   draggable: PropTypes.bool,
   closeable: PropTypes.bool,

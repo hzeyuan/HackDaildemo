@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronDownIcon, XCircleIcon, SyncIcon } from '@primer/octicons-react'
 import CopyButton from '../CopyButton'
 import ReadButton from '../ReadButton'
@@ -7,12 +7,23 @@ import MarkdownRender from '../MarkdownRender/markdown.jsx'
 import { useTranslation } from 'react-i18next'
 import { isUsingCustomModel } from '../../config/index.mjs'
 import { useConfig } from '../../hooks/use-config.mjs'
-
+import _ from 'lodash-es'
 // eslint-disable-next-line
-export function ConversationItem({ type, content, session, onRetry }) {
+export function ConversationItem({ characterId, type, content, session, onRetry }) {
   const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(false)
+  const [characterName, setCharacterName] = useState(null)
   const config = useConfig()
+
+  useEffect(() => {
+    // 使用 lodash 查找角色
+    const foundCharacter = _.find(config.activeSelectionCharacters, {
+      id: characterId,
+    })
+    // console.log('foundCharacter', foundCharacter, characterId, config.activeSelectionCharacters)
+    // 更新状态
+    setCharacterName(foundCharacter?.attributes?.title || null)
+  }, [characterId, config])
 
   switch (type) {
     case 'question':
@@ -55,7 +66,7 @@ export function ConversationItem({ type, content, session, onRetry }) {
                     isUsingCustomModel(session) ? ' (' + config.customModelName + ')' : ''
                   }:`
                 : t('Loading...')} */}
-              小莓用AI
+              {characterName}
             </p>
             <div className="gpt-util-group">
               {onRetry && (

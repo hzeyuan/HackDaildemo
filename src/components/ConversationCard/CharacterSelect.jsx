@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Select, Space } from 'antd'
 import { PropTypes } from 'prop-types'
+// import { updateSession } from '../../services/local-session.mjs'
+// import _ from 'lodash-es'
+// import { setUserConfig } from '../../config/index.mjs'
 
-const handleChange = (value) => {
-  console.log(`Selected Character ID: ${value}`)
-}
-
-export const CharacterSelect = ({ characters, defaultValue }) => {
+export const CharacterSelect = ({ onChange, characters, defaultValue }) => {
   const [options, setOptions] = useState([{}])
+
+  const handleChange = async (id) => {
+    onChange && onChange(id)
+  }
 
   useEffect(() => {
     if (characters && characters.length > 0) {
@@ -43,4 +46,5 @@ export const CharacterSelect = ({ characters, defaultValue }) => {
 CharacterSelect.propTypes = {
   characters: PropTypes.array.isRequired,
   defaultValue: PropTypes.number.isRequired,
+  onChange: PropTypes.func.isRequired,
 }
