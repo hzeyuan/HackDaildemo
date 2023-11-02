@@ -26,6 +26,7 @@ import { findLastIndex } from 'lodash-es'
 import { generateAnswersWithBingWebApi } from '../../services/apis/bing-web.mjs'
 import { handlePortError } from '../../services/wrappers.mjs'
 import { CharacterSelect } from './CharacterSelect'
+import { PlusCircleOutlined } from '@ant-design/icons'
 
 const logo = Browser.runtime.getURL('logo.png')
 
@@ -108,7 +109,11 @@ function ConversationCard(props) {
     // const characterId = session.characterId || props.characterId
     // when the page is responsive, session may accumulate redundant data and needs to be cleared after remounting and before making a new request
     if (props.question) {
-      const newSession = initSession({ ...session, question: props.question })
+      const newSession = initSession({
+        ...session,
+        question: props.question,
+        characterId: characterId,
+      })
       setSession(newSession)
       await postMessage({ session: newSession })
     }
@@ -408,10 +413,11 @@ function ConversationCard(props) {
               <LinkExternalIcon size={16} />
             </a>
           )}
-          <WindowDesktop
+          {/* 新建窗口 */}
+          <PlusCircleOutlined
             className="gpt-util-icon"
-            title={t('Float the Window')}
             size={16}
+            title={t('Float the Window')}
             onClick={() => {
               const position = { x: window.innerWidth / 2 - 300, y: window.innerHeight / 2 - 200 }
               const toolbarContainer = createElementAtPosition(position.x, position.y)
@@ -430,6 +436,7 @@ function ConversationCard(props) {
               )
             }}
           />
+
           <DeleteButton
             size={16}
             text={t('Clear Conversation')}
@@ -446,12 +453,13 @@ function ConversationCard(props) {
                 ...session,
                 question: null,
                 conversationRecords: [],
+                characterId: characterId,
               })
               newSession.sessionId = session.sessionId
               setSession(newSession)
             }}
           />
-          {!props.pageMode && (
+          {/* {!props.pageMode && (
             <span
               title={t('Store to Independent Conversation Page')}
               className="gpt-util-icon"
@@ -476,7 +484,7 @@ function ConversationCard(props) {
             >
               <ArchiveIcon size={16} />
             </span>
-          )}
+          )} */}
           {conversationItemData.length > 0 && (
             <span
               title={t('Jump to bottom')}
@@ -491,7 +499,7 @@ function ConversationCard(props) {
               <MoveToBottomIcon size={16} />
             </span>
           )}
-          <span
+          {/* <span
             title={t('Save Conversation')}
             className="gpt-util-icon"
             onClick={() => {
@@ -506,7 +514,7 @@ function ConversationCard(props) {
             }}
           >
             <DesktopDownloadIcon size={16} />
-          </span>
+          </span> */}
         </span>
       </div>
       <hr />

@@ -18,7 +18,7 @@ export const config = {
     },
   },
   translate: {
-    icon: <Translate />,
+    icon: <Translate style={{ width: '20px', height: '20px' }} />,
     label: 'Translate',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()
@@ -66,7 +66,7 @@ export const config = {
       `Check the following content for possible diction and grammar problems,and polish it carefully:\n"${selection}"`,
   },
   sentiment: {
-    icon: <EmojiSmile />,
+    icon: <EmojiSmile style={{ width: '20px', height: '20px' }} />,
     label: 'Sentiment Analysis',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()
@@ -74,7 +74,7 @@ export const config = {
     },
   },
   divide: {
-    icon: <CardList />,
+    icon: <CardList style={{ width: '20px', height: '20px' }} />,
     label: 'Divide Paragraphs',
     genPrompt: async (selection) =>
       `Divide the following into paragraphs that are easy to read and understand:\n"${selection}"`,

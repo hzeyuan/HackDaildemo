@@ -289,4 +289,5 @@ try {
 
 registerPortListener(async (session, port, config) => await executeApi(session, port, config))
 registerCommands()
-refreshMenu()
+// 渲染右键菜单
+// refreshMenu()

@@ -14,7 +14,6 @@ export function ConversationItem({ characterId, type, content, session, onRetry 
   const [collapsed, setCollapsed] = useState(false)
   const [characterName, setCharacterName] = useState(null)
   const config = useConfig()
-
   useEffect(() => {
     // 使用 lodash 查找角色
     const foundCharacter = _.find(config.activeSelectionCharacters, {

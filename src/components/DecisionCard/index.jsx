@@ -74,10 +74,22 @@ function DecisionCard(props) {
           if (question)
             switch (config.triggerMode) {
               case 'always':
-                return <ConversationCard session={props.session} question={question} />
+                return (
+                  <ConversationCard
+                    characterId={config.character.id}
+                    session={props.session}
+                    question={question}
+                  />
+                )
               case 'manually':
                 if (triggered) {
-                  return <ConversationCard session={props.session} question={question} />
+                  return (
+                    <ConversationCard
+                      characterId={config.character.id}
+                      session={props.session}
+                      question={question}
+                    />
+                  )
                 }
                 return (
                   <p className="gpt-inner manual-btn" onClick={() => setTriggered(true)}>
@@ -89,10 +101,22 @@ function DecisionCard(props) {
                 )
               case 'questionMark':
                 if (endsWithQuestionMark(question.trim())) {
-                  return <ConversationCard session={props.session} question={question} />
+                  return (
+                    <ConversationCard
+                      characterId={config.character.id}
+                      session={props.session}
+                      question={question}
+                    />
+                  )
                 }
                 if (triggered) {
-                  return <ConversationCard session={props.session} question={question} />
+                  return (
+                    <ConversationCard
+                      characterId={config.character.id}
+                      session={props.session}
+                      question={question}
+                    />
+                  )
                 }
                 return (
                   <p className="gpt-inner manual-btn" onClick={() => setTriggered(true)}>

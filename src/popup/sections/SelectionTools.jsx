@@ -15,7 +15,7 @@ export function SelectionTools({ config, updateConfig }) {
       {config.selectionTools.map((key) => (
         <div key={key}>
           <Space>
-            {toolsConfig[key].icon}
+            <span style={{ width: '32px' }}>{toolsConfig[key].icon}</span>
             {t(toolsConfig[key].label)}
           </Space>
           <div className="label">

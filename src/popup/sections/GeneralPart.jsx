@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { openUrl } from '../../utils/index.mjs'
 import {
   isUsingApiKey,
@@ -25,7 +25,7 @@ GeneralPart.propTypes = {
 }
 
 export function GeneralPart({ config, updateConfig }) {
-  // const { t, i18n } = useTranslation
+  const { t, i18n } = useTranslation()
 
   return (
     <div>
@@ -39,30 +39,42 @@ export function GeneralPart({ config, updateConfig }) {
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>谷歌，百度搜索时,自动触发回答:</div>
+          <div>谷歌，百度搜索时,是否自动触发回答:</div>
           <div>
             <Switch
-              defaultChecked
-              onChange={(e) => {
-                const mode = e.target.value
-                updateConfig({ triggerMode: mode })
+              checked={config.triggerMode === 'always'}
+              onChange={(checked) => {
+                updateConfig({ triggerMode: checked ? 'always' : 'manually' })
               }}
             />
           </div>
         </div>
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>选中文本时显示工具栏</div>
+          <div>{t('Insert ChatGPT at the top of search results')}</div>
           <div>
             <Switch
-              defaultChecked
-              onChange={(e) => {
-                const mode = e.target.value
-                updateConfig({ triggerMode: mode })
+              checked={config.insertAtTop}
+              onChange={(checked) => {
+                updateConfig({ insertAtTop: checked })
               }}
             />
           </div>
         </div>
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>{t('Display selection tools next to input box to avoid blocking')}</div>
+          <div>
+            <Switch
+              checked={config.selectionToolsNextToInputBox}
+              onChange={(checked) => {
+                updateConfig({ selectionToolsNextToInputBox: checked })
+              }}
+            />
+          </div>
+        </div>
+
+        {/* <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>工具栏配置</div>
           <div>
             <Switch
@@ -73,355 +85,8 @@ export function GeneralPart({ config, updateConfig }) {
               }}
             />
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
-    // <>
-    //   <label>
-    //     <legend>{t('Triggers')}</legend>
-    //     <select
-    //       required
-    //       onChange={(e) => {
-    //         const mode = e.target.value
-    //         updateConfig({ triggerMode: mode })
-    //       }}
-    //     >
-    //       {Object.entries(TriggerMode).map(([key, desc]) => {
-    //         return (
-    //           <option value={key} key={key} selected={key === config.triggerMode}>
-    //             {t(desc)}
-    //           </option>
-    //         )
-    //       })}
-    //     </select>
-    //   </label>
-    //   <label>
-    //     <legend>{t('Theme')}</legend>
-    //     <select
-    //       required
-    //       onChange={(e) => {
-    //         const mode = e.target.value
-    //         updateConfig({ themeMode: mode })
-    //       }}
-    //     >
-    //       {Object.entries(ThemeMode).map(([key, desc]) => {
-    //         return (
-    //           <option value={key} key={key} selected={key === config.themeMode}>
-    //             {t(desc)}
-    //           </option>
-    //         )
-    //       })}
-    //     </select>
-    //   </label>
-    //   <label>
-    //     <legend>{t('API Mode')}</legend>
-    //     <span style="display: flex; gap: 15px;">
-    //       <select
-    //         style={
-    //           isUsingApiKey(config) ||
-    //           isUsingMultiModeModel(config) ||
-    //           isUsingCustomModel(config) ||
-    //           isUsingAzureOpenAi(config) ||
-    //           isUsingClaude2Api(config) ||
-    //           isUsingCustomNameOnlyModel(config)
-    //             ? 'width: 50%;'
-    //             : undefined
-    //         }
-    //         required
-    //         onChange={(e) => {
-    //           const modelName = e.target.value
-    //           updateConfig({ modelName: modelName })
-    //         }}
-    //       >
-    //         {config.activeApiModes.map((modelName) => {
-    //           let desc
-    //           if (modelName.includes('-')) {
-    //             const splits = modelName.split('-')
-    //             if (splits[0] in Models)
-    //               desc = `${t(Models[splits[0]].desc)} (${t(ModelMode[splits[1]])})`
-    //           } else {
-    //             if (modelName in Models) desc = t(Models[modelName].desc)
-    //           }
-    //           if (desc)
-    //             return (
-    //               <option
-    //                 value={modelName}
-    //                 key={modelName}
-    //                 selected={modelName === config.modelName}
-    //               >
-    //                 {desc}
-    //               </option>
-    //             )
-    //         })}
-    //       </select>
-    //       {isUsingMultiModeModel(config) && (
-    //         <select
-    //           style="width: 50%;"
-    //           required
-    //           onChange={(e) => {
-    //             const modelMode = e.target.value
-    //             updateConfig({ modelMode: modelMode })
-    //           }}
-    //         >
-    //           {Object.entries(ModelMode).map(([key, desc]) => {
-    //             return (
-    //               <option value={key} key={key} selected={key === config.modelMode}>
-    //                 {t(desc)}
-    //               </option>
-    //             )
-    //           })}
-    //         </select>
-    //       )}
-    //       {isUsingApiKey(config) && (
-    //         <span style="width: 50%; display: flex; gap: 5px;">
-    //           <input
-    //             type="password"
-    //             value={config.apiKey}
-    //             placeholder={t('API Key')}
-    //             onChange={(e) => {
-    //               const apiKey = e.target.value
-    //               updateConfig({ apiKey: apiKey })
-    //             }}
-    //           />
-    //           {config.apiKey.length === 0 ? (
-    //             <a
-    //               href="https://platform.openai.com/account/api-keys"
-    //               target="_blank"
-    //               rel="nofollow noopener noreferrer"
-    //             >
-    //               <button style="white-space: nowrap;" type="button">
-    //                 {t('Get')}
-    //               </button>
-    //             </a>
-    //           ) : balance ? (
-    //             <button type="button" onClick={getBalance}>
-    //               {balance}
-    //             </button>
-    //           ) : (
-    //             <button type="button" onClick={getBalance}>
-    //               {t('Balance')}
-    //             </button>
-    //           )}
-    //         </span>
-    //       )}
-    //       {isUsingCustomModel(config) && (
-    //         <input
-    //           style="width: 50%;"
-    //           type="text"
-    //           value={config.customModelName}
-    //           placeholder={t('Model Name')}
-    //           onChange={(e) => {
-    //             const customModelName = e.target.value
-    //             updateConfig({ customModelName: customModelName })
-    //           }}
-    //         />
-    //       )}
-    //       {isUsingCustomNameOnlyModel(config) && (
-    //         <input
-    //           style="width: 50%;"
-    //           type="text"
-    //           value={config.poeCustomBotName}
-    //           placeholder={t('Bot Name')}
-    //           onChange={(e) => {
-    //             const customName = e.target.value
-    //             updateConfig({ poeCustomBotName: customName })
-    //           }}
-    //         />
-    //       )}
-    //       {isUsingAzureOpenAi(config) && (
-    //         <input
-    //           type="password"
-    //           style="width: 50%;"
-    //           value={config.azureApiKey}
-    //           placeholder={t('Azure API Key')}
-    //           onChange={(e) => {
-    //             const apiKey = e.target.value
-    //             updateConfig({ azureApiKey: apiKey })
-    //           }}
-    //         />
-    //       )}
-    //       {isUsingClaude2Api(config) && (
-    //         <input
-    //           type="password"
-    //           style="width: 50%;"
-    //           value={config.claudeApiKey}
-    //           placeholder={t('Claude API Key')}
-    //           onChange={(e) => {
-    //             const apiKey = e.target.value
-    //             updateConfig({ claudeApiKey: apiKey })
-    //           }}
-    //         />
-    //       )}
-    //     </span>
-    //     {isUsingCustomModel(config) && (
-    //       <input
-    //         type="text"
-    //         value={config.customModelApiUrl}
-    //         placeholder={t('Custom Model API Url')}
-    //         onChange={(e) => {
-    //           const value = e.target.value
-    //           updateConfig({ customModelApiUrl: value })
-    //         }}
-    //       />
-    //     )}
-    //     {isUsingAzureOpenAi(config) && (
-    //       <input
-    //         type="password"
-    //         value={config.azureEndpoint}
-    //         placeholder={t('Azure Endpoint')}
-    //         onChange={(e) => {
-    //           const endpoint = e.target.value
-    //           updateConfig({ azureEndpoint: endpoint })
-    //         }}
-    //       />
-    //     )}
-    //     {isUsingAzureOpenAi(config) && (
-    //       <input
-    //         type="text"
-    //         value={config.azureDeploymentName}
-    //         placeholder={t('Azure Deployment Name')}
-    //         onChange={(e) => {
-    //           const deploymentName = e.target.value
-    //           updateConfig({ azureDeploymentName: deploymentName })
-    //         }}
-    //       />
-    //     )}
-    //     {isUsingGithubThirdPartyApi(config) && (
-    //       <input
-    //         type="text"
-    //         value={config.githubThirdPartyUrl}
-    //         placeholder={t('API Url')}
-    //         onChange={(e) => {
-    //           const url = e.target.value
-    //           updateConfig({ githubThirdPartyUrl: url })
-    //         }}
-    //       />
-    //     )}
-    //   </label>
-    //   <label>
-    //     <legend>{t('Preferred Language')}</legend>
-    //     <select
-    //       required
-    //       onChange={(e) => {
-    //         const preferredLanguageKey = e.target.value
-    //         updateConfig({ preferredLanguage: preferredLanguageKey })
-
-    //         let lang
-    //         if (preferredLanguageKey === 'auto') lang = config.userLanguage
-    //         else lang = preferredLanguageKey
-    //         i18n.changeLanguage(lang)
-
-    //         Browser.tabs.query({}).then((tabs) => {
-    //           tabs.forEach((tab) => {
-    //             Browser.tabs
-    //               .sendMessage(tab.id, {
-    //                 type: 'CHANGE_LANG',
-    //                 data: {
-    //                   lang,
-    //                 },
-    //               })
-    //               .catch(() => {})
-    //           })
-    //         })
-    //       }}
-    //     >
-    //       {Object.entries(languageList).map(([k, v]) => {
-    //         return (
-    //           <option value={k} key={k} selected={k === config.preferredLanguage}>
-    //             {v.native}
-    //           </option>
-    //         )
-    //       })}
-    //     </select>
-    //   </label>
-    //   <label>
-    //     <legend>{t('When Icon Clicked')}</legend>
-    //     <select
-    //       required
-    //       onChange={(e) => {
-    //         const mode = e.target.value
-    //         updateConfig({ clickIconAction: mode })
-    //       }}
-    //     >
-    //       <option value="popup" key="popup" selected={config.clickIconAction === 'popup'}>
-    //         {t('Open Settings')}
-    //       </option>
-    //       {Object.entries(menuConfig).map(([k, v]) => {
-    //         return (
-    //           <option value={k} key={k} selected={k === config.clickIconAction}>
-    //             {t(v.label)}
-    //           </option>
-    //         )
-    //       })}
-    //     </select>
-    //   </label>
-    //   <label>
-    //     <input
-    //       type="checkbox"
-    //       checked={config.insertAtTop}
-    //       onChange={(e) => {
-    //         const checked = e.target.checked
-    //         updateConfig({ insertAtTop: checked })
-    //       }}
-    //     />
-    //     {t('Insert ChatGPT at the top of search results')}
-    //   </label>
-    //   <label>
-    //     <input
-    //       type="checkbox"
-    //       checked={config.lockWhenAnswer}
-    //       onChange={(e) => {
-    //         const checked = e.target.checked
-    //         updateConfig({ lockWhenAnswer: checked })
-    //       }}
-    //     />
-    //     {t('Lock scrollbar while answering')}
-    //   </label>
-    //   <label>
-    //     <input
-    //       type="checkbox"
-    //       checked={config.autoRegenAfterSwitchModel}
-    //       onChange={(e) => {
-    //         const checked = e.target.checked
-    //         updateConfig({ autoRegenAfterSwitchModel: checked })
-    //       }}
-    //     />
-    //     {t('Regenerate the answer after switching model')}
-    //   </label>
-    //   <label>
-    //     <input
-    //       type="checkbox"
-    //       checked={config.selectionToolsNextToInputBox}
-    //       onChange={(e) => {
-    //         const checked = e.target.checked
-    //         updateConfig({ selectionToolsNextToInputBox: checked })
-    //       }}
-    //     />
-    //     {t('Display selection tools next to input box to avoid blocking')}
-    //   </label>
-    //   <label>
-    //     <input
-    //       type="checkbox"
-    //       checked={config.alwaysPinWindow}
-    //       onChange={(e) => {
-    //         const checked = e.target.checked
-    //         updateConfig({ alwaysPinWindow: checked })
-    //       }}
-    //     />
-    //     {t('Always pin the floating window')}
-    //   </label>
-    //   <label>
-    //     <input
-    //       type="checkbox"
-    //       checked={config.focusAfterAnswer}
-    //       onChange={(e) => {
-    //         const checked = e.target.checked
-    //         updateConfig({ focusAfterAnswer: checked })
-    //       }}
-    //     />
-    //     {t('Focus to input box after answering')}
-    //   </label>
-    //   <br />
-    // </>
   )
 }

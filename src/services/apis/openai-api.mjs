@@ -72,7 +72,7 @@ export async function generateAnswersWithGptCompletionApi(
       answer += data.choices[0].text
       port.postMessage({ answer: answer, done: false, session: null })
     },
-    async onStart() { },
+    async onStart() {},
     async onEnd() {
       port.postMessage({ done: true })
       port.onMessage.removeListener(messageListener)
@@ -137,7 +137,7 @@ export async function generateAnswersWithChatgptApi(port, question, session, api
         ''
       port.postMessage({ answer: answer, done: false, session: null })
     },
-    async onStart() { },
+    async onStart() {},
     async onEnd() {
       port.postMessage({ done: true })
       port.onMessage.removeListener(messageListener)
@@ -165,11 +165,12 @@ export async function generateAnswersWithUseslessApi(port, question, session) {
   const history = getConversationPairs(
     session.conversationRecords.slice(-config.maxConversationContextLength),
   )
-  // prompt.unshift({ role: 'system', content: await getChatSystemPromptBase() })
-  // prompt.push({ role: 'user', content: question })
-  const token = await Browser.storage.local.get('token').data
-  console.log('token', token, history)
+  const data = await Browser.storage.local.get('token')
+  console.log('请求时发送的token', data.token, history)
 
+  if (!data.token) {
+    throw new Error('请先登录')
+  }
 
   let answer = ''
   await fetchSSE(`http://127.0.0.1:1338/api/prompt`, {
@@ -177,7 +178,7 @@ export async function generateAnswersWithUseslessApi(port, question, session) {
     signal: controller.signal,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsImlhdCI6MTY5ODcyNDM0NSwiZXhwIjoxNzMwMjgxOTQ1fQ.PJe4ZKb3-ozU8csOnO_XUWjPLfzdm5Ek5tpkm6ZLMbI'}`,
+      Authorization: `Bearer ${data.token}`,
     },
     body: JSON.stringify({
       prompt: question,
@@ -212,7 +213,7 @@ export async function generateAnswersWithUseslessApi(port, question, session) {
       // console.log('answer', answer)
       port.postMessage({ answer: answer, done: false, session: null })
     },
-    async onStart() { },
+    async onStart() {},
     async onEnd() {
       port.postMessage({ done: true })
       port.onMessage.removeListener(messageListener)

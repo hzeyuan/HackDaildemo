@@ -17,16 +17,25 @@ export const CharacterSelect = ({ onChange, characters, defaultValue }) => {
       const newOptions = characters.map((character) => ({
         value: character?.id,
         label: (
-          <Space align="center" justify="center">
-            <div style={{ height: '20px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            <div style={{ height: '22px' }}>
               <img
                 src={character?.attributes?.avatar}
                 alt={character?.attributes?.title}
-                style={{ width: '20px', height: '20px' }}
+                style={{ width: '18px', height: '18px' }}
               />
             </div>
-            <span style={{ fontSize: '14px' }}> {character?.attributes?.title}</span>
-          </Space>
+            <div>
+              <span style={{ fontSize: '14px' }}> {character?.attributes?.title}</span>
+            </div>
+          </div>
         ),
       }))
       setOptions(newOptions)
@@ -36,7 +45,7 @@ export const CharacterSelect = ({ onChange, characters, defaultValue }) => {
   return (
     <Select
       defaultValue={defaultValue}
-      style={{ width: '168px', zIndex: 999999 }}
+      style={{ width: '150px', zIndex: 999999 }}
       onChange={handleChange}
       options={options}
     />

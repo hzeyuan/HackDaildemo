@@ -2,6 +2,7 @@ import './styles.scss'
 import { unmountComponentAtNode } from 'react-dom'
 import { render } from 'preact'
 import DecisionCard from '../components/DecisionCard'
+import { FloatingButton } from '../components/FloatingButton'
 import { config as siteConfig } from './site-adapters'
 import { config as toolsConfig } from './selection-tools'
 import { config as menuConfig } from './menu-tools'
@@ -74,7 +75,7 @@ async function mountComponent(siteConfig, userConfig) {
   container.id = 'chatgptbox-container'
   render(
     <DecisionCard
-      session={initSession({ modelName: (await getUserConfig()).modelName })}
+      session={initSession({ characterId: (await getUserConfig()).character.id })}
       question={question}
       siteConfig={siteConfig}
       container={container}
@@ -116,12 +117,15 @@ const deleteToolbar = () => {
 
 const createSelectionTools = async (toolbarContainer, selection) => {
   toolbarContainer.className = 'chatgptbox-toolbar-container'
+  console.log('createSelectionTools')
+  const config = await getUserConfig()
   render(
     <FloatingToolbar
       session={initSession({
-        modelName: (await getUserConfig()).modelName,
-        // character: (await getUserConfig()).character,
+        modelName: config.modelName,
+        characterId: config.character.id,
       })}
+      characterId={config.character.id}
       selection={selection}
       container={toolbarContainer}
       dockable={true}
@@ -130,6 +134,7 @@ const createSelectionTools = async (toolbarContainer, selection) => {
   )
 }
 
+// 控制当用户选择文本时显示工具栏，以及在不再需要时隐藏工具栏
 async function prepareForSelectionTools() {
   document.addEventListener('mouseup', (e) => {
     if (toolbarContainer && toolbarContainer.contains(e.target)) return
@@ -185,7 +190,6 @@ async function prepareForSelectionTools() {
   })
 }
 
-// 控制当用户选择文本时显示工具栏，以及在不再需要时隐藏工具栏
 async function prepareForSelectionToolsTouch() {
   document.addEventListener('touchend', (e) => {
     if (toolbarContainer && toolbarContainer.contains(e.target)) return
@@ -221,6 +225,7 @@ async function prepareForSelectionToolsTouch() {
 
 let menuX, menuY
 
+// 右键点击显示
 async function prepareForRightClickMenu() {
   document.addEventListener('contextmenu', (e) => {
     menuX = e.clientX
@@ -239,16 +244,21 @@ async function prepareForRightClickMenu() {
         else prompt = await menuItem.genPrompt()
         if (prompt) prompt = await cropText(`Reply in ${await getPreferredLanguage()}.\n` + prompt)
       }
-
+      const config = await getUserConfig()
       const position = data.useMenuPosition
         ? { x: menuX, y: menuY }
         : { x: window.innerWidth / 2 - 300, y: window.innerHeight / 2 - 200 }
       const container = createElementAtPosition(position.x, position.y)
       container.className = 'chatgptbox-toolbar-container-not-queryable'
+      console.log('CREATE_CHAT')
       render(
         <FloatingToolbar
-          session={initSession({ modelName: (await getUserConfig()).modelName })}
+          session={initSession({
+            modelName: config.modelName,
+            characterId: config.character.id,
+          })}
           selection={data.selectionText}
+          characterId={config.character.id}
           container={container}
           triggered={true}
           closeable={true}
@@ -290,6 +300,7 @@ async function prepareForStaticCard() {
   }
 }
 
+// 获取访问令牌，chatgpt，poe等网站
 async function overwriteAccessToken() {
   if (location.hostname !== 'chat.openai.com') return
 
@@ -349,6 +360,18 @@ async function prepareForForegroundRequests() {
   })
 }
 
+// 加载一个浮动按钮在右下角
+async function prepareForFloatingButton() {
+  console.log('prepareForFloatingButton')
+
+  // 检查页面上是否已经存在按钮，防止重复添加
+  if (!document.getElementById('floating-button')) {
+    const mountPoint = document.createElement('div')
+    document.body.appendChild(mountPoint) // 将挂载点添加到body
+    render(<FloatingButton />, mountPoint) // 使用 Preact 渲染组件
+  }
+}
+
 async function run() {
   await getPreferredLanguageKey().then((lang) => {
     changeLanguage(lang)
@@ -360,6 +383,20 @@ async function run() {
     }
   })
 
+  window.addEventListener('message', (event) => {
+    // 此处需要检查消息来源是否为您的网页
+    if (event.source === window && event.data) {
+      if (event.data.action === 'AUTH_TOKEN') {
+        console.log('AUTH_TOKEN')
+        const { token } = event.data
+        Browser.storage.local.set({ token: token })
+      } else if (event.data.action === 'SIGNOUT') {
+        console.log('SIGNOUT')
+        Browser.storage.local.set({ token: '' })
+      }
+    }
+  })
+
   await overwriteAccessToken()
   await prepareForForegroundRequests()
 
@@ -367,6 +404,7 @@ async function run() {
   prepareForSelectionToolsTouch()
   prepareForStaticCard()
   prepareForRightClickMenu()
+  prepareForFloatingButton()
 }
 
 run()
