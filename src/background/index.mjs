@@ -265,6 +265,31 @@ try {
     ['requestBody'],
   )
 
+  // Browser.webRequest.onBeforeRequest.addListener(
+  //   async (details) => {
+  //     // Check if the request is made by the extension itself to avoid infinite loop
+  //     if (details.initiator === 'your-extension-id' || details.type === 'xmlhttprequest') {
+  //       return; // Skip processing for these requests
+  //     }
+  //     if (details.url.endsWith('.pdf')) {
+  //       console.log('PDF URL detected:', details.url);
+  //       try {
+  //         const response = await fetch(details.url);
+  //         if (!response.ok) { // If the HTTP response status is not "OK", throw an error
+  //           throw new Error(`HTTP error! status: ${response.status}`);
+  //         }
+  //         const data = await response.blob(); // Get the PDF as a Blob
+  //         console.log('PDF Blob:', data);
+  //       } catch (error) {
+  //         console.error('Error fetching PDF:', error);
+  //         // Further error handling or logging here
+  //       }
+  //     }
+  //   },
+  //   { urls: ["<all_urls>"] }
+  // );
+
+
   Browser.webRequest.onBeforeSendHeaders.addListener(
     (details) => {
       const headers = details.requestHeaders
@@ -286,6 +311,8 @@ try {
 } catch (error) {
   console.log(error)
 }
+
+
 
 registerPortListener(async (session, port, config) => await executeApi(session, port, config))
 registerCommands()
