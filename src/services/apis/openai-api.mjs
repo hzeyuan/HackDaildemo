@@ -173,7 +173,7 @@ export async function generateAnswersWithUseslessApi(port, question, session) {
   }
 
   let answer = ''
-  await fetchSSE(`http://127.0.0.1:1338/api/prompt`, {
+  await fetchSSE(`https://aibackend.usesless.com/api/cms/prompt`, {
     method: 'POST',
     signal: controller.signal,
     headers: {

@@ -313,7 +313,7 @@ async function build() {
   }
   await runWebpack(
     false,
-    false,
+    true,
     generateWebpackCallback(() => finishOutput('')),
   )
 }

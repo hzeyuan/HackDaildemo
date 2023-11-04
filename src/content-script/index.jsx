@@ -385,16 +385,16 @@ async function run() {
 
   window.addEventListener('message', (event) => {
     // 此处需要检查消息来源是否为您的网页
-    if (event.source === window && event.data) {
-      if (event.data.action === 'AUTH_TOKEN') {
-        console.log('AUTH_TOKEN')
-        const { token } = event.data
-        Browser.storage.local.set({ token: token })
-      } else if (event.data.action === 'SIGNOUT') {
-        console.log('SIGNOUT')
-        Browser.storage.local.set({ token: '' })
-      }
+    // if (event.source === window && event.data) {
+    if (event.data.action === 'AUTH_TOKEN') {
+      console.log('AUTH_TOKEN')
+      const { token } = event.data
+      Browser.storage.local.set({ token: token })
+    } else if (event.data.action === 'SIGNOUT') {
+      console.log('SIGNOUT')
+      Browser.storage.local.set({ token: '' })
     }
+    // }
   })
 
   await overwriteAccessToken()

@@ -2,7 +2,7 @@
 
 export async function fetchCharacters(pagination, filters = [], order = []) {
   // 定义请求的 URL 和参数
-  const url = 'http://127.0.0.1:1338/api/public/characters'
+  const url = 'https://aibackend.usesless.com/api/cms/public/characters'
 
   let queryStr = `pagination[page]=${pagination.page}&pagination[pageSize]=${pagination.pageSize}`
 

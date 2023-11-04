@@ -74,8 +74,8 @@ async function executeApi(session, port, config) {
     port,
     session.question,
     session,
-    config.apiKey,
-    session.modelName,
+    // config.apiKey,
+    // session.modelName,
   )
 
   // web上能否使用

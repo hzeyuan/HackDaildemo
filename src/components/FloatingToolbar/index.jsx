@@ -1,4 +1,3 @@
-import Browser from 'webextension-polyfill'
 import { cloneElement, useEffect, useState } from 'react'
 import ConversationCard from '../ConversationCard'
 import PropTypes from 'prop-types'
@@ -9,8 +8,8 @@ import { useClampWindowSize } from '../../hooks/use-clamp-window-size'
 import { useTranslation } from 'react-i18next'
 import { useConfig } from '../../hooks/use-config.mjs'
 import LanguageDropdown from '../LanguageDropdown'
-import { Avatar, Space } from 'antd'
-const logo = Browser.runtime.getURL('logo.png')
+import { Avatar, ConfigProvider } from 'antd'
+// const logo = Browser.runtime.getURL('logo.png')
 
 function FloatingToolbar(props) {
   const { t } = useTranslation()
@@ -63,7 +62,7 @@ function FloatingToolbar(props) {
 
   if (!render) return <div />
 
-  console.log('triggered', triggered)
+  // console.log('triggered', triggered)
 
   if (triggered) {
     const updatePosition = () => {
@@ -163,52 +162,54 @@ function FloatingToolbar(props) {
     }
 
     return (
-      <div data-theme={config.themeMode}>
-        <div size="small" className="chatgptbox-selection-toolbar">
-          <div className="selectionLine"></div>
-          {/* <div style={{padding:'0 4px'}}> 
+      <ConfigProvider prefixCls="ddcat">
+        <div data-theme={config.themeMode}>
+          <div size="small" className="chatgptbox-selection-toolbar">
+            <div className="selectionLine"></div>
+            {/* <div style={{padding:'0 4px'}}> 
           <img
             src={logo}
             style="user-select:none;width:24px;height:24px;background:rgba(0,0,0,0);filter:none;"
           />
           </div> */}
-          {tools}
-          {config.activeSelectionCharacters.map((item) => (
-            <div
-              onClick={async () => {
-                const p = getClientPosition(props.container)
-                props.container.style.position = 'fixed'
-                setPosition(p)
-                setPrompt(selection)
-                setCharacterId(item.id)
-                // setPrompt(await toolConfig.genPrompt(selection))
-                console.log('点击角色进行对话', selection, item)
-                setTriggered(true)
-              }}
-              key={item?.id}
-              className="chatgptbox-selection-toolbar-button"
-            >
-              <Avatar
-                shape="square"
-                size={24}
-                src={
-                  <img
-                    style={{ width: '24px', height: '24px' }}
-                    src={item?.attributes?.avatar}
-                    alt="avatar"
-                  />
-                }
-              />
-            </div>
-          ))}
+            {tools}
+            {config.activeSelectionCharacters.map((item) => (
+              <div
+                onClick={async () => {
+                  const p = getClientPosition(props.container)
+                  props.container.style.position = 'fixed'
+                  setPosition(p)
+                  setPrompt(selection)
+                  setCharacterId(item.id)
+                  // setPrompt(await toolConfig.genPrompt(selection))
+                  console.log('点击角色进行对话', selection, item)
+                  setTriggered(true)
+                }}
+                key={item?.id}
+                className="chatgptbox-selection-toolbar-button"
+              >
+                <Avatar
+                  shape="square"
+                  size={24}
+                  src={
+                    <img
+                      style={{ objectFit: 'contain' }}
+                      src={item?.attributes?.avatar}
+                      alt="avatar"
+                    />
+                  }
+                />
+              </div>
+            ))}
 
-          {/* <LanguageDropdown
+            {/* <LanguageDropdown
             selectLanguage={() => {
               handleSelectLanguage('translate')
             }}
           /> */}
+          </div>
         </div>
-      </div>
+      </ConfigProvider>
     )
   }
 }

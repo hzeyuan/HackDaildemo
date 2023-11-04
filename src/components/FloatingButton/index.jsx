@@ -1,4 +1,4 @@
-import { FloatButton, Tooltip } from 'antd'
+import { FloatButton, Tooltip, ConfigProvider } from 'antd'
 import { CommentOutlined, CustomerServiceOutlined } from '@ant-design/icons'
 import { getCoreContentText } from '../../utils/get-core-content-text'
 import { useState } from 'react'
@@ -7,7 +7,9 @@ import { initSession } from '../../services/init-session.mjs'
 import { getUserConfig } from '../../config/index.mjs'
 import FloatingToolbar from '../FloatingToolbar/index'
 import { render } from 'preact'
+import Browser from 'webextension-polyfill'
 
+const logo = Browser.runtime.getURL('logo.png')
 const actionConfig = {
   newChat: {
     label: 'New Chat',
@@ -55,31 +57,38 @@ function FloatingButton() {
   }
 
   return (
-    <FloatButton.Group
-      open={open}
-      trigger="hover"
-      style={{
-        right: 24,
-      }}
-      onClick={() => {
-        setOpen(!open)
-      }}
-      icon={<CustomerServiceOutlined />}
-    >
-      <Tooltip
-        onClick={() => handleCreateChat('summarizePage')}
-        title="总结网页:Ctrl+N"
-        placement="left"
+    <ConfigProvider prefixCls="ddcat">
+      <FloatButton.Group
+        open={open}
+        shape="square"
+        trigger="hover"
+        style={{
+          right: 24,
+        }}
+        onClick={() => {
+          setOpen(!open)
+        }}
+        icon={<img style={{ width: '18px', height: '18px' }} src={logo} />}
       >
-        <FloatButton />
-      </Tooltip>
-      <Tooltip onClick={() => handleCreateChat('newChat')} title="新建聊天:Ctrl+B" placement="left">
-        <FloatButton icon={<CommentOutlined />} />
-      </Tooltip>
-      {/* <Tooltip onClick={() => handleCreateChat('newChat')} title="新建聊天:Ctrl+B" placement="left">
+        <Tooltip
+          onClick={() => handleCreateChat('summarizePage')}
+          title="总结网页:Ctrl+N"
+          placement="left"
+        >
+          <FloatButton />
+        </Tooltip>
+        <Tooltip
+          onClick={() => handleCreateChat('newChat')}
+          title="新建聊天:Ctrl+B"
+          placement="left"
+        >
+          <FloatButton icon={<CommentOutlined />} />
+        </Tooltip>
+        {/* <Tooltip onClick={() => handleCreateChat('newChat')} title="新建聊天:Ctrl+B" placement="left">
         <FloatButton icon={<CommentOutlined />} />
       </Tooltip> */}
-    </FloatButton.Group>
+      </FloatButton.Group>
+    </ConfigProvider>
   )
 }
 
